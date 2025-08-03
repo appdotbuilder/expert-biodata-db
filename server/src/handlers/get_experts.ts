@@ -1,9 +1,21 @@
 
+import { db } from '../db';
+import { expertsTable } from '../db/schema';
 import { type Expert } from '../schema';
 
-export async function getExperts(): Promise<Expert[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all expert records from the database.
-    // This should return a list of all experts with their basic information.
-    return [];
-}
+export const getExperts = async (): Promise<Expert[]> => {
+  try {
+    const results = await db.select()
+      .from(expertsTable)
+      .execute();
+
+    // Convert date_of_birth from string to Date object
+    return results.map(expert => ({
+      ...expert,
+      date_of_birth: new Date(expert.date_of_birth)
+    }));
+  } catch (error) {
+    console.error('Failed to fetch experts:', error);
+    throw error;
+  }
+};

@@ -1,8 +1,20 @@
 
+import { db } from '../db';
+import { expertsTable } from '../db/schema';
+import { eq } from 'drizzle-orm';
+
 export async function deleteExpert(id: number): Promise<boolean> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is deleting an expert and all related records from the database.
-    // Should cascade delete all related education, work experience, skills, certifications, projects, and documents.
-    // Should return true if deletion was successful, false if expert was not found.
-    return false;
+  try {
+    // Delete expert record - cascade will handle related records
+    const result = await db.delete(expertsTable)
+      .where(eq(expertsTable.id, id))
+      .returning()
+      .execute();
+
+    // Return true if a record was deleted, false if not found
+    return result.length > 0;
+  } catch (error) {
+    console.error('Expert deletion failed:', error);
+    throw error;
+  }
 }
